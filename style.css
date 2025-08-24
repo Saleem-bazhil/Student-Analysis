@@ -135,6 +135,7 @@ section[data-testid="stSidebar"] .stButton button {
     
     .metric-card {
         padding: 1rem;
+        margin: auto;
     }
     
     .metric-value {
