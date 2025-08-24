@@ -1,0 +1,143 @@
+/* style.css */
+/* Main background */
+.stApp {
+    background-color: black;
+    font-family: 'Inter', sans-serif;
+}
+
+/* Headers */
+h1, h2, h3 {
+    color: #1E3A8A;
+    margin-bottom: 1rem;
+}
+
+/* Main header */
+.main-header {
+    font-size: 3rem;
+    color: #1E3A8A;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+/* Sub headers */
+.sub-header {
+    font-size: 1.5rem;
+    color: #3B82F6;
+    border-bottom: 2px solid #3B82F6;
+    padding-bottom: 0.3rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+/* Metric cards */
+.metric-card {
+    background: linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.metric-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.metric-value {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.metric-label {
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+/* Buttons */
+.stButton > button {
+    background-color: #3B82F6;
+    color: white;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.stButton > button:hover {
+    background-color: #2563EB;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Student cards */
+.student-card {
+    background-color: #F9FAFB;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1rem;
+    border-left: 4px solid #3B82F6;
+}
+
+/* Dataframes */
+.dataframe {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Tabs */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 8px;
+}
+
+.stTabs [data-baseweb="tab"] {
+    background-color: #EFF6FF;
+    border-radius: 8px 8px 0 0;
+    padding: 10px 16px;
+    transition: all 0.3s ease;
+}
+
+.stTabs [aria-selected="true"] {
+    background-color: #3B82F6;
+    color: white;
+}
+
+/* Sidebar */
+section[data-testid="stSidebar"] {
+    background-color: #1E3A8A;
+    color: white;
+}
+
+section[data-testid="stSidebar"] .stButton button {
+    background-color: white;
+    color: #1E3A8A;
+    border-radius: 8px;
+}
+
+/* Expanders */
+.streamlit-expanderHeader {
+    font-weight: 600;
+    color: #1E3A8A;
+}
+
+/* Responsive design */
+@media screen and (max-width: 768px) {
+    .main-header {
+        font-size: 2rem;
+    }
+    
+    .sub-header {
+        font-size: 1.2rem;
+    }
+    
+    .metric-card {
+        padding: 1rem;
+    }
+    
+    .metric-value {
+        font-size: 1.5rem;
+    }
+}

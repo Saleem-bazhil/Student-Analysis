@@ -6,31 +6,60 @@ import streamlit as st
 from io import BytesIO
 
 # Set page config
-st.set_page_config(page_title="Student Performance Analysis", layout="wide")
+st.set_page_config(
+    page_title="Student Performance Analysis", 
+    layout="wide",
+    page_icon="🎓"
+)
+
+# Function to load external CSS
+def load_css(file_name):
+    """
+    Load CSS from an external file
+    """
+    try:
+        with open(file_name) as f:
+            st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+    except FileNotFoundError:
+        st.error("CSS file not found. Using default styling.")
+
+# Load external CSS
+load_css("style.css")
 
 # Title and description
-st.title("📊 Student Performance Analysis Dashboard")
+st.markdown('<h1 class="main-header">🎓 Student Performance Analysis Dashboard</h1>', unsafe_allow_html=True)
 st.markdown("""
-This interactive dashboard analyzes student performance data to identify patterns, strengths, and areas for improvement.
-Explore the visualizations below to gain insights!
-""")
+<div style="text-align: center; margin-bottom: 2rem;">
+    This interactive dashboard analyzes student performance data to identify patterns, strengths, and areas for improvement.
+    Explore the visualizations below to gain insights!
+</div>
+""", unsafe_allow_html=True)
 
 # File uploader
-uploaded_file = st.file_uploader("Upload your student performance CSV file", type="csv")
+with st.container():
+    st.markdown("### 📁 Upload Your Data")
+    uploaded_file = st.file_uploader("Upload your student performance CSV file", type="csv", label_visibility="collapsed")
 
 if uploaded_file is not None:
     # Load data
     df = pd.read_csv(uploaded_file)
     
     # Display basic info
-    st.header("Dataset Overview")
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Total Students", len(df))
-    col2.metric("Number of Classes", df['Class'].nunique())
-    col3.metric("Data Columns", len(df.columns))
+    st.markdown('<div class="sub-header">Dataset Overview</div>', unsafe_allow_html=True)
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        st.markdown('<div class="metric-card"><div class="metric-value">' + str(len(df)) + '</div><div class="metric-label">Total Students</div></div>', unsafe_allow_html=True)
+    with col2:
+        st.markdown('<div class="metric-card"><div class="metric-value">' + str(df['Class'].nunique()) + '</div><div class="metric-label">Number of Classes</div></div>', unsafe_allow_html=True)
+    with col3:
+        st.markdown('<div class="metric-card"><div class="metric-value">' + str(len(df.columns)) + '</div><div class="metric-label">Data Columns</div></div>', unsafe_allow_html=True)
+    with col4:
+        avg_percentage = df['Percentage'].mean().round(2)
+        st.markdown(f'<div class="metric-card"><div class="metric-value">{avg_percentage}%</div><div class="metric-label">Average Percentage</div></div>', unsafe_allow_html=True)
     
     # Show data
-    if st.checkbox("Show raw data"):
+    if st.checkbox("Show raw data", key="show_raw_data"):
         st.dataframe(df)
     
     # Convert to long format
@@ -46,18 +75,18 @@ if uploaded_file is not None:
     grade_palette = {'A+': '#2ecc71', 'A': '#27ae60', 'B': '#f39c12', 'C': '#e67e22', 'D': '#e74c3c', 'F': '#c0392b'}
     
     # Visualizations
-    st.header("Performance Analysis")
+    st.markdown('<div class="sub-header">Performance Analysis</div>', unsafe_allow_html=True)
     
     col1, col2 = st.columns(2)
     
     with col1:
-        st.subheader("Score Distribution by Subject")
+        st.markdown("##### Score Distribution by Subject")
         fig, ax = plt.subplots(figsize=(8, 6))
         sns.boxplot(data=df_long, x='Subject', y='Score', hue='Subject', palette=subject_palette, legend=False, ax=ax)
         ax.set_title('Score Distribution by Subject')
         st.pyplot(fig)
         
-        st.subheader("Performance by Gender")
+        st.markdown("##### Performance by Gender")
         fig, ax = plt.subplots(figsize=(8, 6))
         sns.boxplot(data=df_long, x='Subject', y='Score', hue='Gender', palette='pastel', ax=ax)
         ax.set_title('Performance by Gender')
@@ -65,14 +94,14 @@ if uploaded_file is not None:
         st.pyplot(fig)
     
     with col2:
-        st.subheader("Subject Correlation Heatmap")
+        st.markdown("##### Subject Correlation Heatmap")
         fig, ax = plt.subplots(figsize=(8, 6))
         subject_corr = df[['Math', 'Science', 'English']].corr()
         sns.heatmap(subject_corr, annot=True, cmap='RdYlGn', center=0, square=True, fmt='.2f', ax=ax)
         ax.set_title('Subject Correlation Heatmap')
         st.pyplot(fig)
         
-        st.subheader("Grade Distribution")
+        st.markdown("##### Grade Distribution")
         fig, ax = plt.subplots(figsize=(8, 6))
         grade_order = ['A+', 'A', 'B', 'C', 'D', 'F']
         grade_counts = df['Grade'].value_counts().reindex(grade_order)
@@ -86,35 +115,42 @@ if uploaded_file is not None:
         st.pyplot(fig)
     
     # Detailed Analysis
-    st.header("Detailed Analysis")
+    st.markdown('<div class="sub-header">Detailed Analysis</div>', unsafe_allow_html=True)
     
     # Overall statistics
-    st.subheader("Subject Averages")
+    st.markdown("##### Subject Averages")
     subject_avgs = df[['Math', 'Science', 'English']].mean().round(2)
-    for subject, avg in subject_avgs.items():
-        st.metric(f"{subject} Average", avg)
+    
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.markdown(f'<div class="metric-card"><div class="metric-value">{subject_avgs["Math"]}</div><div class="metric-label">Math Average</div></div>', unsafe_allow_html=True)
+    with col2:
+        st.markdown(f'<div class="metric-card"><div class="metric-value">{subject_avgs["Science"]}</div><div class="metric-label">Science Average</div></div>', unsafe_allow_html=True)
+    with col3:
+        st.markdown(f'<div class="metric-card"><div class="metric-value">{subject_avgs["English"]}</div><div class="metric-label">English Average</div></div>', unsafe_allow_html=True)
     
     # Top and bottom performers
     col1, col2 = st.columns(2)
     
     with col1:
-        st.subheader("Top 5 Performers")
+        st.markdown("##### 🏆 Top 5 Performers")
         top_students = df.nlargest(5, 'Percentage')[['Name', 'Class', 'Math', 'Science', 'English', 'Total', 'Percentage', 'Grade']]
         st.dataframe(top_students)
     
     with col2:
-        st.subheader("Bottom 5 Performers")
+        st.markdown("##### 📊 Bottom 5 Performers")
         bottom_students = df.nsmallest(5, 'Percentage')[['Name', 'Class', 'Math', 'Science', 'English', 'Total', 'Percentage', 'Grade']]
         st.dataframe(bottom_students)
     
     # Student selector for individual profiles
-    st.subheader("Individual Student Profile")
+    st.markdown("##### 👤 Individual Student Profile")
     student_names = df['Name'].tolist()
-    selected_student = st.selectbox("Select a student to view their profile:", student_names)
+    selected_student = st.selectbox("Select a student to view their profile:", student_names, label_visibility="collapsed")
     
     if selected_student:
         student_data = df_long[df_long['Name'] == selected_student]
         class_avg = df_long.groupby('Subject')['Score'].mean().reset_index()
+        student_info = df[df['Name'] == selected_student].iloc[0]
         
         fig, ax = plt.subplots(figsize=(10, 6))
         
@@ -141,20 +177,30 @@ if uploaded_file is not None:
         ax.grid(True, alpha=0.3)
         st.pyplot(fig)
         
-        # Display student details
-        student_info = df[df['Name'] == selected_student].iloc[0]
-        st.write(f"**Student Details for {selected_student}:**")
-        st.write(f"- Class: {student_info['Class']}")
-        st.write(f"- Gender: {student_info['Gender']}")
-        st.write(f"- Math: {student_info['Math']} (Class Avg: {subject_avgs['Math']})")
-        st.write(f"- Science: {student_info['Science']} (Class Avg: {subject_avgs['Science']})")
-        st.write(f"- English: {student_info['English']} (Class Avg: {subject_avgs['English']})")
-        st.write(f"- Total: {student_info['Total']}")
-        st.write(f"- Percentage: {student_info['Percentage']}%")
-        st.write(f"- Grade: {student_info['Grade']}")
+        # Display student details in a card
+        st.markdown(f'<div class="student-card">', unsafe_allow_html=True)
+        st.markdown(f"**Student Details for {selected_student}**")
+        
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.write(f"**Class:** {student_info['Class']}")
+            st.write(f"**Gender:** {student_info['Gender']}")
+        with col2:
+            st.write(f"**Math:** {student_info['Math']} (Class Avg: {subject_avgs['Math']})")
+            st.write(f"**Science:** {student_info['Science']} (Class Avg: {subject_avgs['Science']})")
+        with col3:
+            st.write(f"**English:** {student_info['English']} (Class Avg: {subject_avgs['English']})")
+            st.write(f"**Total:** {student_info['Total']}")
+        
+        col4, col5 = st.columns(2)
+        with col4:
+            st.write(f"**Percentage:** {student_info['Percentage']}%")
+        with col5:
+            st.write(f"**Grade:** {student_info['Grade']}")
+        st.markdown('</div>', unsafe_allow_html=True)
     
     # Download report
-    st.subheader("Download Analysis Report")
+    st.markdown('<div class="sub-header">Download Report</div>', unsafe_allow_html=True)
     
     # Create Excel file in memory
     output = BytesIO()
@@ -169,14 +215,14 @@ if uploaded_file is not None:
     output.seek(0)
     
     st.download_button(
-        label="Download Full Analysis Report (Excel)",
+        label="📥 Download Full Analysis Report (Excel)",
         data=output,
         file_name="student_performance_analysis.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
 
 else:
-    st.info("Please upload a CSV file to begin the analysis. Use the sample format below.")
+    st.info("📝 Please upload a CSV file to begin the analysis. Use the sample format below.")
     
     # Sample data structure
     sample_data = {
